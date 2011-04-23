@@ -9,10 +9,10 @@ public class Scanner {
     private static final int EOF = CHAR_MAX - 1;
 
     private static final int STATE_INIT = 0;
-    private static final int STATE_ID = 1;
-    private static final int STATE_QUOTE = 2;
-    private static final int STATE_WHITESPACE = 3;
-    private static final int STATE_NEWLINE = 4;
+    private static final int STATE_WHITESPACE = 1;
+    private static final int STATE_NEWLINE = 2;
+    private static final int STATE_ID = 3;
+    private static final int STATE_QUOTE = 4;
     private static final int STATE_QUOTE_END = 5;
 
     private static Transition[][] TABLE = new Transition[STATE_MAX][CHAR_MAX];
@@ -31,6 +31,15 @@ public class Scanner {
         acceptState(STATE_INIT, '\n', Token.NEWLINE);
         setTransition(STATE_INIT, EOF, Transition.EXIT);
 
+        // STATE_WHITESPACE
+        initAcceptingStatePushBack(STATE_WHITESPACE, Token.WHITESPACE);
+        setWhitespaceState(STATE_WHITESPACE, STATE_WHITESPACE);
+
+        // STATE_NEWLINE
+        initAcceptingStatePushBack(STATE_NEWLINE, Token.NEWLINE);
+        acceptState(STATE_NEWLINE, '\n', Token.NEWLINE);
+
+        // STATE_ID
         initAcceptingStatePushBack(STATE_ID, Token.ID);
         transition = Transition.next(STATE_ID);
         setLetterTransition(STATE_ID, transition);
@@ -43,12 +52,6 @@ public class Scanner {
         transition = Transition.next(STATE_QUOTE);
         setQuotedCharacterTransition(STATE_QUOTE, transition);
         setNextState(STATE_QUOTE, '"', STATE_QUOTE_END);
-
-        initAcceptingStatePushBack(STATE_WHITESPACE, Token.WHITESPACE);
-        setWhitespaceState(STATE_WHITESPACE, STATE_WHITESPACE);
-
-        initAcceptingStatePushBack(STATE_NEWLINE, Token.NEWLINE);
-        acceptState(STATE_NEWLINE, '\n', Token.NEWLINE);
 
         initAcceptingStatePushBack(STATE_QUOTE_END, Token.QUOTE);
         setNextState(STATE_QUOTE_END, '"', STATE_QUOTE);
