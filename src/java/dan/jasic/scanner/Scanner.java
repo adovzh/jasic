@@ -22,9 +22,9 @@ public class Scanner {
     static {
         Transition transition;
 
+        // STATE_INIT
         initNonAcceptingState(STATE_INIT);
         setLetterState(STATE_INIT, STATE_ID);
-        setNextState(STATE_INIT, '_', STATE_ID);
         setNextState(STATE_INIT, '"', STATE_QUOTE);
         acceptState(STATE_INIT, '=', Token.EQ);
         acceptState(STATE_INIT, ';', Token.SEMICOLON);
@@ -38,17 +38,13 @@ public class Scanner {
         setLetterTransition(STATE_ID, transition);
         setTransition(STATE_ID, '_', transition);
         setDigitTransition(STATE_ID, transition);
+        acceptState(STATE_ID, '$', Token.ID);
 
+        // STATE_QUOTE
         initNonAcceptingState(STATE_QUOTE);
         transition = new Transition(Transition.TR_NEXT, STATE_QUOTE);
-        setLetterTransition(STATE_QUOTE, transition);
-        setTransition(STATE_QUOTE, '_', transition);
-        setDigitTransition(STATE_QUOTE, transition);
+        setQuotedCharacterTransition(STATE_QUOTE, transition);
         setNextState(STATE_QUOTE, '"', STATE_QUOTE_END);
-        setTransition(STATE_QUOTE, '=', transition);
-        setTransition(STATE_QUOTE, ';', transition);
-        setWhitespaceTransition(STATE_QUOTE, transition);
-        setTransition(STATE_QUOTE, '!', transition);
 
         initAcceptingStatePushBack(STATE_WHITESPACE, Token.WHITESPACE);
         setWhitespaceState(STATE_WHITESPACE, STATE_WHITESPACE);
@@ -125,6 +121,12 @@ public class Scanner {
     private static void setWhitespaceTransition(int state, Transition transition) {
         setTransition(state, ' ', transition);
         setTransition(state, '\t', transition);
+    }
+
+    private static void setQuotedCharacterTransition(int state, Transition transition) {
+        for (char c = 32; c <= 126; c++) {
+            setTransition(state, c, transition);
+        }
     }
 
     private final char[] text;
