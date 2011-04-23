@@ -31,10 +31,10 @@ public class Scanner {
         setWhitespaceState(STATE_INIT, STATE_WHITESPACE);
         setNextState(STATE_INIT, '\r', STATE_NEWLINE);
         acceptState(STATE_INIT, '\n', Token.NEWLINE);
-        setTransition(STATE_INIT, EOF, new Transition(Transition.TR_EXIT));
+        setTransition(STATE_INIT, EOF, Transition.EXIT);
 
         initAcceptingStatePushBack(STATE_ID, Token.ID);
-        transition = new Transition(Transition.TR_NEXT, STATE_ID);
+        transition = Transition.next(STATE_ID);
         setLetterTransition(STATE_ID, transition);
         setTransition(STATE_ID, '_', transition);
         setDigitTransition(STATE_ID, transition);
@@ -42,7 +42,7 @@ public class Scanner {
 
         // STATE_QUOTE
         initNonAcceptingState(STATE_QUOTE);
-        transition = new Transition(Transition.TR_NEXT, STATE_QUOTE);
+        transition = Transition.next(STATE_QUOTE);
         setQuotedCharacterTransition(STATE_QUOTE, transition);
         setNextState(STATE_QUOTE, '"', STATE_QUOTE_END);
 
@@ -57,15 +57,15 @@ public class Scanner {
     }
 
     private static void initNonAcceptingState(int state) {
-        initState(state, new Transition(Transition.TR_ERROR));
+        initState(state, Transition.ERROR);
     }
 
     private static void initAcceptingState(int state, int tokenType) {
-        initState(state, new Transition(Transition.TR_ACCEPT, tokenType));
+        initState(state, Transition.accept(tokenType));
     }
 
     private static void initAcceptingStatePushBack(int state, int tokenType) {
-        initState(state, new Transition(Transition.TR_ACCEPT_PB, tokenType));
+        initState(state, Transition.acceptPushBack(tokenType));
     }
 
     private static void initState(int state, Transition transition) {
@@ -75,15 +75,15 @@ public class Scanner {
     }
 
     private static void setNextState(int state, char c, int nextState) {
-        setTransition(state, c, new Transition(Transition.TR_NEXT, nextState));
+        setTransition(state, c, Transition.next(nextState));
     }
 
     private static void acceptState(int state, int c, int tokenType) {
-        setTransition(state, c, new Transition(Transition.TR_ACCEPT, tokenType));
+        setTransition(state, c, Transition.accept(tokenType));
     }
 
     private static void acceptStatePushBack(int state, int c, int tokenType) {
-        setTransition(state, c, new Transition(Transition.TR_ACCEPT_PB, tokenType));
+        setTransition(state, c, Transition.acceptPushBack(tokenType));
     }
 
     private static void setTransition(int state, int c, Transition transition) {
@@ -91,7 +91,7 @@ public class Scanner {
     }
 
     private static void setLetterState(int state, int nextState) {
-        setLetterTransition(state, new Transition(Transition.TR_NEXT, nextState));
+        setLetterTransition(state, Transition.next(nextState));
     }
 
     private static void setLetterTransition(int state, Transition transition) {
@@ -105,7 +105,7 @@ public class Scanner {
     }
 
     private static void setDigitState(int state, int nextState) {
-        setDigitTransition(state, new Transition(Transition.TR_NEXT, nextState));
+        setDigitTransition(state, Transition.next(nextState));
     }
 
     private static void setDigitTransition(int state, Transition transition) {
@@ -115,7 +115,7 @@ public class Scanner {
     }
 
     private static void setWhitespaceState(int state, int nextState) {
-        setWhitespaceTransition(state, new Transition(Transition.TR_NEXT, nextState));
+        setWhitespaceTransition(state, Transition.next(nextState));
     }
 
     private static void setWhitespaceTransition(int state, Transition transition) {
@@ -163,24 +163,24 @@ public class Scanner {
             char c = text[pos++];
             transition = TABLE[state][c];
             state = transition.value;
-        } while (transition.type == Transition.TR_NEXT);
+        } while (transition.isNext());
 
         switch (transition.type) {
-            case Transition.TR_ACCEPT:
+            case ACCEPT:
                 lexeme = new String(text, lexemeStart, pos - lexemeStart);
                 token = new Token(transition.value, lexeme);
                 lexemeStart = pos;
                 state = STATE_INIT;
                 return token;
-            case Transition.TR_ACCEPT_PB:
+            case ACCEPT_PB:
                 lexeme = new String(text, lexemeStart, pos - lexemeStart - 1);
                 token = new Token(transition.value, lexeme);
                 lexemeStart = --pos;
                 state = STATE_INIT;
                 return token;
-            case Transition.TR_ERROR:
+            case ERROR:
                 throw new IllegalStateException("Unexpected symbol: " + text[pos - 1]);
-            case Transition.TR_EXIT:
+            case EXIT:
                 return null;
             default:
                 throw new IllegalStateException("Impossible situation!");
@@ -188,22 +188,39 @@ public class Scanner {
     }
 
     private static class Transition {
-        static final int TR_ERROR = 0;
-        static final int TR_NEXT = 1;
-        static final int TR_ACCEPT = 2;
-        static final int TR_ACCEPT_PB = 3;
-        static final int TR_EXIT = 4;
+        enum Type {
+            ERROR, NEXT, ACCEPT, ACCEPT_PB, EXIT
+        }
 
-        int type;
+        private static final Transition ERROR = new Transition(Type.ERROR);
+        private static final Transition EXIT = new Transition(Type.EXIT);
+
+        static Transition next(int state) {
+            return new Transition(Type.NEXT, state);
+        }
+
+        static Transition accept(int tokenType) {
+            return new Transition(Type.ACCEPT, tokenType);
+        }
+
+        static Transition acceptPushBack(int tokenType) {
+            return new Transition(Type.ACCEPT_PB, tokenType);
+        }
+
+        Type type;
         int value;
 
-        Transition(int type) {
+        Transition(Type type) {
             this.type = type;
         }
 
-        Transition(int type, int value) {
+        Transition(Type type, int value) {
             this.type = type;
             this.value = value;
+        }
+
+        boolean isNext() {
+            return type == Type.NEXT;
         }
 
         @Override
