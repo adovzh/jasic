@@ -1,7 +1,5 @@
 package dan.jasic.scanner;
 
-import com.sun.org.apache.xml.internal.security.Init;
-
 /**
  * @author Alexander Dovzhikov
  */
