@@ -13,6 +13,10 @@ public class Token {
     public static final int SEMICOLON = 7;
     public static final int PLUS = 8;
     public static final int MINUS = 9;
+    public static final int ASTERISK = 10;
+    public static final int SLASH = 11;
+    public static final int LBRACE = 12;
+    public static final int RBRACE = 13;
 
     private final int type;
     private final String lexeme;

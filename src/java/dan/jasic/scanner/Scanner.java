@@ -44,6 +44,10 @@ public class Scanner {
         setTransition(STATE_INIT, EOF, Transition.EXIT);
         acceptState(STATE_INIT, '+', Token.PLUS);
         acceptState(STATE_INIT, '-', Token.MINUS);
+        acceptState(STATE_INIT, '*', Token.ASTERISK);
+        acceptState(STATE_INIT, '/', Token.SLASH);
+        acceptState(STATE_INIT, '(', Token.LBRACE);
+        acceptState(STATE_INIT, ')', Token.RBRACE);
         setDigitTransition(STATE_INIT, number1Transition);
         setTransition(STATE_INIT, '.', number2Transition);
 

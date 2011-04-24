@@ -162,4 +162,62 @@ public class ScannerTest {
         token = scanner.getToken();
         Assert.assertNull(token);
     }
+
+    @Test
+    public void expression() {
+        String code = "3.4*(-5+9.3e-2)/2.4*.12";
+        Scanner scanner = new Scanner(code);
+        Token token;
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NUMBER, "3.4"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.ASTERISK, "*"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.LBRACE, "("), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.MINUS, "-"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NUMBER, "5"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.PLUS, "+"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NUMBER, "9.3e-2"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.RBRACE, ")"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.SLASH, "/"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NUMBER, "2.4"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.ASTERISK, "*"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NUMBER, ".12"), token);
+
+        token = scanner.getToken();
+        Assert.assertNull(token);
+    }
 }
