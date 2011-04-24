@@ -1,5 +1,7 @@
 package dan.jasic.scanner;
 
+import java.util.*;
+
 /**
  * @author Alexander Dovzhikov
  */
@@ -182,6 +184,21 @@ public class Scanner {
         }
     }
 
+    private static final Map<String, Integer> KEYWORDS;
+
+    static {
+        Map<String, Integer> kw = new HashMap<String, Integer>();
+        kw.put("PRINT", Token.PRINT);
+        kw.put("LET", Token.LET);
+
+        KEYWORDS = Collections.unmodifiableMap(kw);
+    }
+
+    private static int checkKeyword(String id) {
+        Integer keywordType = KEYWORDS.get(id.toUpperCase());
+        return (keywordType != null) ? keywordType : Token.ID;
+    }
+
     private final char[] text;
 
     private int lexemeStart = 0;
@@ -203,6 +220,15 @@ public class Scanner {
         do {
             token = getTokenInternal();
         } while (token != null && token.isWhitespace());
+
+        if (token != null && token.getType() == Token.ID) {
+            String lexeme = token.getLexeme();
+            int newType = checkKeyword(lexeme);
+
+            if (newType != Token.ID) {
+                token = new Token(newType, lexeme);
+            }
+        }
 
         return token;
     }

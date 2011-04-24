@@ -220,4 +220,22 @@ public class ScannerTest {
         token = scanner.getToken();
         Assert.assertNull(token);
     }
+
+    @Test
+    public void keyword() {
+        String code = "Let Print";
+        Scanner scanner = new Scanner(code);
+        Token token;
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.LET, "Let"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.PRINT, "Print"), token);
+
+        token = scanner.getToken();
+        Assert.assertNull(token);
+    }
 }

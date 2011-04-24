@@ -18,6 +18,9 @@ public class Token {
     public static final int LBRACE = 12;
     public static final int RBRACE = 13;
 
+    public static final int PRINT = 40;
+    public static final int LET = 41;
+
     private final int type;
     private final String lexeme;
 
@@ -28,6 +31,14 @@ public class Token {
 
     public boolean isWhitespace() {
         return type == WHITESPACE;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public String getLexeme() {
+        return lexeme;
     }
 
     @Override
