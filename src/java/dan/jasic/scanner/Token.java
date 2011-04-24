@@ -20,6 +20,7 @@ public class Token {
 
     public static final int PRINT = 40;
     public static final int LET = 41;
+    public static final int INPUT = 42;
 
     private final int type;
     private final String lexeme;

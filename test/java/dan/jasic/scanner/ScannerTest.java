@@ -238,4 +238,59 @@ public class ScannerTest {
         token = scanner.getToken();
         Assert.assertNull(token);
     }
+
+    @Test
+    public void greetingCode() {
+        String code = "10 INPUT \"Enter your name: \"; Name$\r\n" +
+                "20 PRINT \"Hello, \"; Name$";
+        Scanner scanner = new Scanner(code);
+        Token token;
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NUMBER, "10"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.INPUT, "INPUT"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.QUOTE, "\"Enter your name: \""), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.SEMICOLON, ";"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.ID, "Name$"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NEWLINE, "\r\n"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.NUMBER, "20"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.PRINT, "PRINT"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.QUOTE, "\"Hello, \""), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.SEMICOLON, ";"), token);
+
+        token = scanner.getToken();
+        Assert.assertNotNull(token);
+        Assert.assertEquals(new Token(Token.ID, "Name$"), token);
+
+        token = scanner.getToken();
+        Assert.assertNull(token);
+    }
 }

@@ -190,6 +190,7 @@ public class Scanner {
         Map<String, Integer> kw = new HashMap<String, Integer>();
         kw.put("PRINT", Token.PRINT);
         kw.put("LET", Token.LET);
+        kw.put("INPUT", Token.INPUT);
 
         KEYWORDS = Collections.unmodifiableMap(kw);
     }
