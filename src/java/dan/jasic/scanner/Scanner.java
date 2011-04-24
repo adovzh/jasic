@@ -184,21 +184,7 @@ public class Scanner {
         }
     }
 
-    private static final Map<String, Integer> KEYWORDS;
-
-    static {
-        Map<String, Integer> kw = new HashMap<String, Integer>();
-        kw.put("PRINT", Token.PRINT);
-        kw.put("LET", Token.LET);
-        kw.put("INPUT", Token.INPUT);
-
-        KEYWORDS = Collections.unmodifiableMap(kw);
-    }
-
-    private static int checkKeyword(String id) {
-        Integer keywordType = KEYWORDS.get(id.toUpperCase());
-        return (keywordType != null) ? keywordType : Token.ID;
-    }
+    private final Keywords keywords = new Keywords();
 
     private final char[] text;
 
@@ -222,15 +208,6 @@ public class Scanner {
             token = getTokenInternal();
         } while (token != null && token.isWhitespace());
 
-        if (token != null && token.getType() == Token.ID) {
-            String lexeme = token.getLexeme();
-            int newType = checkKeyword(lexeme);
-
-            if (newType != Token.ID) {
-                token = new Token(newType, lexeme);
-            }
-        }
-
         return token;
     }
 
@@ -248,13 +225,13 @@ public class Scanner {
         switch (transition.type) {
             case ACCEPT:
                 lexeme = new String(text, lexemeStart, pos - lexemeStart);
-                token = new Token(transition.value, lexeme);
+                token = createToken(transition.value, lexeme);
                 lexemeStart = pos;
                 state = STATE_INIT;
                 return token;
             case ACCEPT_PB:
                 lexeme = new String(text, lexemeStart, pos - lexemeStart - 1);
-                token = new Token(transition.value, lexeme);
+                token = createToken(transition.value, lexeme);
                 lexemeStart = --pos;
                 state = STATE_INIT;
                 return token;
@@ -265,6 +242,17 @@ public class Scanner {
             default:
                 throw new IllegalStateException("Impossible situation!");
         }
+    }
+
+    private Token createToken(int tokenType, String lexeme) {
+        if (tokenType == Token.ID) {
+            Token keyword = keywords.checkLexeme(lexeme);
+
+            if (keyword != null)
+                return keyword;
+        }
+
+        return new Token(tokenType, lexeme);
     }
 
     private static class Transition {
