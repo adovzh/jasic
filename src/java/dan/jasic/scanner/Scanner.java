@@ -14,11 +14,25 @@ public class Scanner {
     private static final int STATE_ID = 3;
     private static final int STATE_QUOTE = 4;
     private static final int STATE_QUOTE_END = 5;
+    private static final int STATE_NUMBER1 = 6;
+    private static final int STATE_NUMBER2 = 7;
+    private static final int STATE_NUMBER3 = 8;
+    private static final int STATE_NUMBER4 = 9;
+    private static final int STATE_NUMBER5 = 10;
+    private static final int STATE_NUMBER6 = 11;
+    private static final int STATE_NUMBER7 = 12;
 
     private static Transition[][] TABLE = new Transition[STATE_MAX][CHAR_MAX];
 
     static {
         Transition transition;
+        Transition number1Transition = Transition.next(STATE_NUMBER1);
+        Transition number2Transition = Transition.next(STATE_NUMBER2);
+        Transition number3Transition = Transition.next(STATE_NUMBER3);
+        Transition number4Transition = Transition.next(STATE_NUMBER4);
+        Transition number5Transition = Transition.next(STATE_NUMBER5);
+        Transition number6Transition = Transition.next(STATE_NUMBER6);
+        Transition number7Transition = Transition.next(STATE_NUMBER7);
 
         // STATE_INIT
         initNonAcceptingState(STATE_INIT);
@@ -30,6 +44,10 @@ public class Scanner {
         setNextState(STATE_INIT, '\r', STATE_NEWLINE);
         acceptState(STATE_INIT, '\n', Token.NEWLINE);
         setTransition(STATE_INIT, EOF, Transition.EXIT);
+        setTransition(STATE_INIT, '+', number1Transition);
+        setTransition(STATE_INIT, '-', number1Transition);
+        setDigitTransition(STATE_INIT, number2Transition);
+        setTransition(STATE_INIT, '.', number3Transition);
 
         // STATE_WHITESPACE
         initAcceptingStatePushBack(STATE_WHITESPACE, Token.WHITESPACE);
@@ -53,8 +71,45 @@ public class Scanner {
         setQuotedCharacterTransition(STATE_QUOTE, transition);
         setNextState(STATE_QUOTE, '"', STATE_QUOTE_END);
 
+        // STATE_QUOTE_END
         initAcceptingStatePushBack(STATE_QUOTE_END, Token.QUOTE);
         setNextState(STATE_QUOTE_END, '"', STATE_QUOTE);
+
+        // STATE_NUMBER1 (J)
+        initNonAcceptingState(STATE_NUMBER1);
+        setDigitTransition(STATE_NUMBER1, number2Transition);
+        setTransition(STATE_NUMBER2, '.', number3Transition);
+
+        // STATE_NUMBER2 (K)
+        initAcceptingStatePushBack(STATE_NUMBER2, Token.NUMBER);
+        setDigitTransition(STATE_NUMBER2, number2Transition);
+        setTransition(STATE_NUMBER2, '.', number4Transition);
+        setTransition(STATE_NUMBER2, 'E', number5Transition);
+        setTransition(STATE_NUMBER2, 'e', number5Transition);
+
+        // STATE_NUMBER3 (L)
+        initNonAcceptingState(STATE_NUMBER3);
+        setDigitTransition(STATE_NUMBER3, number4Transition);
+
+        // STATE_NUMBER4 (M)
+        initAcceptingStatePushBack(STATE_NUMBER4, Token.NUMBER);
+        setDigitTransition(STATE_NUMBER4, number4Transition);
+        setTransition(STATE_NUMBER4, 'E', number5Transition);
+        setTransition(STATE_NUMBER4, 'e', number5Transition);
+
+        // STATE_NUMBER5 (N)
+        initNonAcceptingState(STATE_NUMBER5);
+        setTransition(STATE_NUMBER5, '+', number6Transition);
+        setTransition(STATE_NUMBER5, '-', number6Transition);
+        setDigitTransition(STATE_NUMBER5, number7Transition);
+
+        // STATE_NUMBER6 (P)
+        initNonAcceptingState(STATE_NUMBER6);
+        setDigitTransition(STATE_NUMBER6, number7Transition);
+
+        // STATE_NUMBER7 (Q)
+        initAcceptingStatePushBack(STATE_NUMBER7, Token.NUMBER);
+        setDigitTransition(STATE_NUMBER7, number7Transition);
     }
 
     private static void initNonAcceptingState(int state) {
@@ -208,11 +263,12 @@ public class Scanner {
             return new Transition(Type.ACCEPT_PB, tokenType);
         }
 
-        Type type;
-        int value;
+        final Type type;
+        final int value;
 
         Transition(Type type) {
             this.type = type;
+            this.value = 0;
         }
 
         Transition(Type type, int value) {
@@ -222,6 +278,26 @@ public class Scanner {
 
         boolean isNext() {
             return type == Type.NEXT;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Transition that = (Transition) o;
+
+            if (value != that.value) return false;
+            if (type != that.type) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = type.hashCode();
+            result = 31 * result + value;
+            return result;
         }
 
         @Override
