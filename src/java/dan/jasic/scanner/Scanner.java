@@ -20,7 +20,6 @@ public class Scanner {
     private static final int STATE_NUMBER4 = 9;
     private static final int STATE_NUMBER5 = 10;
     private static final int STATE_NUMBER6 = 11;
-    private static final int STATE_NUMBER7 = 12;
 
     private static Transition[][] TABLE = new Transition[STATE_MAX][CHAR_MAX];
 
@@ -32,7 +31,6 @@ public class Scanner {
         Transition number4Transition = Transition.next(STATE_NUMBER4);
         Transition number5Transition = Transition.next(STATE_NUMBER5);
         Transition number6Transition = Transition.next(STATE_NUMBER6);
-        Transition number7Transition = Transition.next(STATE_NUMBER7);
 
         // STATE_INIT
         initNonAcceptingState(STATE_INIT);
@@ -44,10 +42,10 @@ public class Scanner {
         setNextState(STATE_INIT, '\r', STATE_NEWLINE);
         acceptState(STATE_INIT, '\n', Token.NEWLINE);
         setTransition(STATE_INIT, EOF, Transition.EXIT);
-        setTransition(STATE_INIT, '+', number1Transition);
-        setTransition(STATE_INIT, '-', number1Transition);
-        setDigitTransition(STATE_INIT, number2Transition);
-        setTransition(STATE_INIT, '.', number3Transition);
+        acceptState(STATE_INIT, '+', Token.PLUS);
+        acceptState(STATE_INIT, '-', Token.MINUS);
+        setDigitTransition(STATE_INIT, number1Transition);
+        setTransition(STATE_INIT, '.', number2Transition);
 
         // STATE_WHITESPACE
         initAcceptingStatePushBack(STATE_WHITESPACE, Token.WHITESPACE);
@@ -75,41 +73,36 @@ public class Scanner {
         initAcceptingStatePushBack(STATE_QUOTE_END, Token.QUOTE);
         setNextState(STATE_QUOTE_END, '"', STATE_QUOTE);
 
-        // STATE_NUMBER1 (J)
-        initNonAcceptingState(STATE_NUMBER1);
-        setDigitTransition(STATE_NUMBER1, number2Transition);
-        setTransition(STATE_NUMBER2, '.', number3Transition);
+        // STATE_NUMBER1 (K)
+        initAcceptingStatePushBack(STATE_NUMBER1, Token.NUMBER);
+        setDigitTransition(STATE_NUMBER1, number1Transition);
+        setTransition(STATE_NUMBER1, '.', number3Transition);
+        setTransition(STATE_NUMBER1, 'E', number4Transition);
+        setTransition(STATE_NUMBER1, 'e', number4Transition);
 
-        // STATE_NUMBER2 (K)
-        initAcceptingStatePushBack(STATE_NUMBER2, Token.NUMBER);
-        setDigitTransition(STATE_NUMBER2, number2Transition);
-        setTransition(STATE_NUMBER2, '.', number4Transition);
-        setTransition(STATE_NUMBER2, 'E', number5Transition);
-        setTransition(STATE_NUMBER2, 'e', number5Transition);
+        // STATE_NUMBER2 (L)
+        initNonAcceptingState(STATE_NUMBER2);
+        setDigitTransition(STATE_NUMBER2, number3Transition);
 
-        // STATE_NUMBER3 (L)
-        initNonAcceptingState(STATE_NUMBER3);
-        setDigitTransition(STATE_NUMBER3, number4Transition);
+        // STATE_NUMBER3 (M)
+        initAcceptingStatePushBack(STATE_NUMBER3, Token.NUMBER);
+        setDigitTransition(STATE_NUMBER3, number3Transition);
+        setTransition(STATE_NUMBER3, 'E', number4Transition);
+        setTransition(STATE_NUMBER3, 'e', number4Transition);
 
-        // STATE_NUMBER4 (M)
-        initAcceptingStatePushBack(STATE_NUMBER4, Token.NUMBER);
-        setDigitTransition(STATE_NUMBER4, number4Transition);
-        setTransition(STATE_NUMBER4, 'E', number5Transition);
-        setTransition(STATE_NUMBER4, 'e', number5Transition);
+        // STATE_NUMBER4 (N)
+        initNonAcceptingState(STATE_NUMBER4);
+        setTransition(STATE_NUMBER4, '+', number5Transition);
+        setTransition(STATE_NUMBER4, '-', number5Transition);
+        setDigitTransition(STATE_NUMBER4, number6Transition);
 
-        // STATE_NUMBER5 (N)
+        // STATE_NUMBER5 (P)
         initNonAcceptingState(STATE_NUMBER5);
-        setTransition(STATE_NUMBER5, '+', number6Transition);
-        setTransition(STATE_NUMBER5, '-', number6Transition);
-        setDigitTransition(STATE_NUMBER5, number7Transition);
+        setDigitTransition(STATE_NUMBER5, number6Transition);
 
-        // STATE_NUMBER6 (P)
-        initNonAcceptingState(STATE_NUMBER6);
-        setDigitTransition(STATE_NUMBER6, number7Transition);
-
-        // STATE_NUMBER7 (Q)
-        initAcceptingStatePushBack(STATE_NUMBER7, Token.NUMBER);
-        setDigitTransition(STATE_NUMBER7, number7Transition);
+        // STATE_NUMBER6 (Q)
+        initAcceptingStatePushBack(STATE_NUMBER6, Token.NUMBER);
+        setDigitTransition(STATE_NUMBER6, number6Transition);
     }
 
     private static void initNonAcceptingState(int state) {
