@@ -36,6 +36,7 @@ public class Scanner {
 
         // STATE_INIT
         initNonAcceptingState(STATE_INIT);
+        setTransition(STATE_INIT, EOF, Transition.EXIT);
         setLetterState(STATE_INIT, STATE_ID);
         setNextState(STATE_INIT, '"', STATE_QUOTE);
         acceptState(STATE_INIT, '=', Token.EQ);
@@ -43,7 +44,6 @@ public class Scanner {
         setWhitespaceState(STATE_INIT, STATE_WHITESPACE);
         setNextState(STATE_INIT, '\r', STATE_NEWLINE);
         acceptState(STATE_INIT, '\n', Token.NEWLINE);
-        setTransition(STATE_INIT, EOF, Transition.EXIT);
         acceptState(STATE_INIT, '+', Token.PLUS);
         acceptState(STATE_INIT, '-', Token.MINUS);
         acceptState(STATE_INIT, '*', Token.ASTERISK);
@@ -115,9 +115,9 @@ public class Scanner {
         initState(state, Transition.ERROR);
     }
 
-    private static void initAcceptingState(int state, int tokenType) {
-        initState(state, Transition.accept(tokenType));
-    }
+//    private static void initAcceptingState(int state, int tokenType) {
+//        initState(state, Transition.accept(tokenType));
+//    }
 
     private static void initAcceptingStatePushBack(int state, int tokenType) {
         initState(state, Transition.acceptPushBack(tokenType));
@@ -137,9 +137,9 @@ public class Scanner {
         setTransition(state, c, Transition.accept(tokenType));
     }
 
-    private static void acceptStatePushBack(int state, int c, int tokenType) {
-        setTransition(state, c, Transition.acceptPushBack(tokenType));
-    }
+//    private static void acceptStatePushBack(int state, int c, int tokenType) {
+//        setTransition(state, c, Transition.acceptPushBack(tokenType));
+//    }
 
     private static void setTransition(int state, int c, Transition transition) {
         TABLE[state][c] = transition;
@@ -159,9 +159,9 @@ public class Scanner {
         }
     }
 
-    private static void setDigitState(int state, int nextState) {
-        setDigitTransition(state, Transition.next(nextState));
-    }
+//    private static void setDigitState(int state, int nextState) {
+//        setDigitTransition(state, Transition.next(nextState));
+//    }
 
     private static void setDigitTransition(int state, Transition transition) {
         for (char c = '0'; c <= '9'; c++) {
@@ -311,10 +311,8 @@ public class Scanner {
 
             Transition that = (Transition) o;
 
-            if (value != that.value) return false;
-            if (type != that.type) return false;
+            return value == that.value && type == that.type;
 
-            return true;
         }
 
         @Override
