@@ -12,14 +12,14 @@ public class KeywordsTest {
 
     @Test
     public void basicKeywords() {
-        Assert.assertEquals(new Token(Token.LET, "Let"), keywords.checkLexeme("Let"));
-        Assert.assertEquals(new Token(Token.LET, "LET"), keywords.checkLexeme("LET"));
-        Assert.assertEquals(new Token(Token.PRINT, "Print"), keywords.checkLexeme("Print"));
-        Assert.assertEquals(new Token(Token.PRINT, "PRINT"), keywords.checkLexeme("PRINT"));
-        Assert.assertEquals(new Token(Token.INPUT, "Input"), keywords.checkLexeme("Input"));
-        Assert.assertEquals(new Token(Token.INPUT, "INPUT"), keywords.checkLexeme("INPUT"));
+        Assert.assertEquals(new Keyword(Token.LET, "Let"), keywords.checkLexeme("Let"));
+        Assert.assertEquals(new Keyword(Token.LET, "LET"), keywords.checkLexeme("LET"));
+        Assert.assertEquals(new Keyword(Token.PRINT, "Print"), keywords.checkLexeme("Print"));
+        Assert.assertEquals(new Keyword(Token.PRINT, "PRINT"), keywords.checkLexeme("PRINT"));
+        Assert.assertEquals(new Keyword(Token.INPUT, "Input"), keywords.checkLexeme("Input"));
+        Assert.assertEquals(new Keyword(Token.INPUT, "INPUT"), keywords.checkLexeme("INPUT"));
 
         Assert.assertNull(keywords.checkLexeme("A"));
-        Assert.assertNull(keywords.checkLexeme("NaME"));
+        Assert.assertNull(keywords.checkLexeme("NaMME"));
     }
 }

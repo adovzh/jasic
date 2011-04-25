@@ -229,11 +229,11 @@ public class ScannerTest {
 
         token = scanner.getToken();
         Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.LET, "Let"), token);
+        Assert.assertEquals(new Keyword(Token.LET, "Let"), token);
 
         token = scanner.getToken();
         Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.PRINT, "Print"), token);
+        Assert.assertEquals(new Keyword(Token.PRINT, "Print"), token);
 
         token = scanner.getToken();
         Assert.assertNull(token);
@@ -252,7 +252,7 @@ public class ScannerTest {
 
         token = scanner.getToken();
         Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.INPUT, "INPUT"), token);
+        Assert.assertEquals(new Keyword(Token.INPUT, "INPUT"), token);
 
         token = scanner.getToken();
         Assert.assertNotNull(token);
@@ -276,7 +276,7 @@ public class ScannerTest {
 
         token = scanner.getToken();
         Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.PRINT, "PRINT"), token);
+        Assert.assertEquals(new Keyword(Token.PRINT, "PRINT"), token);
 
         token = scanner.getToken();
         Assert.assertNotNull(token);
