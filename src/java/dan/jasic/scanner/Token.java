@@ -9,14 +9,27 @@ public class Token {
     public static final int ID = 3;
     public static final int NUMBER = 4;
     public static final int QUOTE = 5;
-    public static final int EQ = 6;
-    public static final int SEMICOLON = 7;
-    public static final int PLUS = 8;
-    public static final int MINUS = 9;
-    public static final int ASTERISK = 10;
-    public static final int SLASH = 11;
-    public static final int LBRACE = 12;
-    public static final int RBRACE = 13;
+
+    public static final int AMPERSAND = 6;
+    public static final int APOSTROPHE = 7;
+    public static final int ASTERISK = 8;
+    public static final int COLON = 9;
+    public static final int COMMA = 10;
+    public static final int DOLLAR = 11;
+    public static final int EQ = 12;
+    public static final int EXCLAMATION = 13;
+    public static final int GT = 14;
+    public static final int LT = 15;
+    public static final int LBRACE = 16;
+    public static final int RBRACE = 17;
+    public static final int MINUS = 18;
+    public static final int PERCENT = 19;
+    public static final int PLUS = 20;
+    public static final int POWER = 21;
+    public static final int QUESTION = 22;
+    public static final int SHARP = 23;
+    public static final int SEMICOLON = 24;
+    public static final int SLASH = 25;
 
     public static final int ACCESS = 40;
     public static final int AND = 41;

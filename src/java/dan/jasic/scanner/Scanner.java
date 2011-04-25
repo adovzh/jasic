@@ -1,7 +1,5 @@
 package dan.jasic.scanner;
 
-import java.util.*;
-
 /**
  * @author Alexander Dovzhikov
  */
@@ -48,8 +46,10 @@ public class Scanner {
         acceptState(STATE_INIT, '-', Token.MINUS);
         acceptState(STATE_INIT, '*', Token.ASTERISK);
         acceptState(STATE_INIT, '/', Token.SLASH);
+        acceptState(STATE_INIT, '^', Token.POWER);
         acceptState(STATE_INIT, '(', Token.LBRACE);
         acceptState(STATE_INIT, ')', Token.RBRACE);
+        acceptState(STATE_INIT, ',', Token.COMMA);
         setDigitTransition(STATE_INIT, number1Transition);
         setTransition(STATE_INIT, '.', number2Transition);
 
