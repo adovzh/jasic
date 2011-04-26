@@ -1,5 +1,8 @@
 package dan.jasic.scanner;
 
+import dan.jasic.scanner.token.Keyword;
+import dan.jasic.scanner.token.Token;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package dan.jasic.scanner;
+package dan.jasic.scanner.token;
 
 /**
  * @author Alexander Dovzhikov

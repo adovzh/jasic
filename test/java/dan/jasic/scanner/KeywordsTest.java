@@ -1,5 +1,7 @@
 package dan.jasic.scanner;
 
+import dan.jasic.scanner.token.Keyword;
+import dan.jasic.scanner.token.Token;
 import junit.framework.Assert;
 import org.junit.Test;
 

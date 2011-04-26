@@ -1,5 +1,8 @@
 package dan.jasic.scanner;
 
+import dan.jasic.scanner.token.Keyword;
+import dan.jasic.scanner.token.Newline;
+import dan.jasic.scanner.token.Token;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,9 +26,9 @@ public class ScannerTest {
         String code = "\t\n \r\n\t\r";
         Iterator<Token> it = Scanner.scan(code).iterator();
 
-        assertEquals(new Token(Token.NEWLINE, "\n"), it.next());
-        assertEquals(new Token(Token.NEWLINE, "\r\n"), it.next());
-        assertEquals(new Token(Token.NEWLINE, "\r"), it.next());
+        assertEquals(new Newline("\n"), it.next());
+        assertEquals(new Newline("\r\n"), it.next());
+        assertEquals(new Newline("\r"), it.next());
         Assert.assertFalse(it.hasNext());
     }
 
@@ -202,7 +205,7 @@ public class ScannerTest {
         assertEquals(new Token(Token.QUOTE, "\"Enter your name: \""), it.next());
         assertEquals(new Token(Token.SEMICOLON, ";"), it.next());
         assertEquals(new Token(Token.ID, "Name$"), it.next());
-        assertEquals(new Token(Token.NEWLINE, "\r\n"), it.next());
+        assertEquals(new Newline("\r\n"), it.next());
         assertEquals(new Token(Token.NUMBER, "20"), it.next());
         assertEquals(new Keyword(Token.PRINT, "PRINT"), it.next());
         assertEquals(new Token(Token.QUOTE, "\"Hello, \""), it.next());

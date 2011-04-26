@@ -1,5 +1,8 @@
 package dan.jasic.scanner;
 
+import dan.jasic.scanner.token.Newline;
+import dan.jasic.scanner.token.Token;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -283,6 +286,8 @@ public class Scanner {
 
             if (keyword != null)
                 return keyword;
+        } else if (tokenType == Token.NEWLINE) {
+            return new Newline(lexeme);
         }
 
         return new Token(tokenType, lexeme);

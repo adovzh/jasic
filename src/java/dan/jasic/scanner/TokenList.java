@@ -1,6 +1,6 @@
 package dan.jasic.scanner;
 
-import java.util.Iterator;
+import dan.jasic.scanner.token.Token;
 
 /**
  * @author Alexander Dovzhikov

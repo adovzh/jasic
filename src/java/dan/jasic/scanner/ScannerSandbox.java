@@ -1,5 +1,7 @@
 package dan.jasic.scanner;
 
+import dan.jasic.scanner.token.Token;
+
 /**
  * @author Alexander Dovzhikov
  */
