@@ -187,95 +187,20 @@ public class Scanner {
         }
     }
 
-    public static TokenList scan(String code) {
-        final Scanner scanner = new Scanner(code);
+    public TokenList scan(String code) {
+        int len = code.length();
+        final char[] text = new char[len + 1];
+        code.getChars(0, len, text, 0);
+        text[len] = 255;
 
         return new TokenList() {
             public Iterator<Token> iterator() {
-                return new Iterator<Token>() {
-                    Token token = scanner.getToken();
-
-                    public boolean hasNext() {
-                        return (token != null);
-                    }
-
-                    public Token next() {
-                        if (token == null)
-                            throw new NoSuchElementException();
-
-                        Token tk = token;
-                        token = scanner.getToken();
-
-                        return tk;
-                    }
-
-                    public void remove() {
-                        throw new UnsupportedOperationException();
-                    }
-                };
+                return new TokenIterator(text);
             }
         };
     }
 
     private final Keywords keywords = new Keywords();
-
-    private final char[] text;
-
-    private int lexemeStart = 0;
-    private int pos = 0;
-    private int state = STATE_INIT;
-
-    public Scanner(String text) {
-        this(text.toCharArray());
-    }
-
-    public Scanner(char[] text) {
-        this.text = new char[text.length + 1];
-        System.arraycopy(text, 0, this.text, 0, text.length);
-        this.text[text.length] = 255;
-    }
-
-    public Token getToken() {
-        Token token;
-        do {
-            token = getTokenInternal();
-        } while (token != null && token.isWhitespace());
-
-        return token;
-    }
-
-    private Token getTokenInternal() {
-        Transition transition;
-        Token token;
-        String lexeme;
-
-        do {
-            char c = text[pos++];
-            transition = TABLE[state][c];
-            state = transition.value;
-        } while (transition.isNext());
-
-        switch (transition.type) {
-            case ACCEPT:
-                lexeme = new String(text, lexemeStart, pos - lexemeStart);
-                token = createToken(transition.value, lexeme);
-                lexemeStart = pos;
-                state = STATE_INIT;
-                return token;
-            case ACCEPT_PB:
-                lexeme = new String(text, lexemeStart, pos - lexemeStart - 1);
-                token = createToken(transition.value, lexeme);
-                lexemeStart = --pos;
-                state = STATE_INIT;
-                return token;
-            case ERROR:
-                throw new IllegalStateException("Unexpected symbol: " + text[pos - 1]);
-            case EXIT:
-                return null;
-            default:
-                throw new IllegalStateException("Impossible situation!");
-        }
-    }
 
     private Token createToken(int tokenType, String lexeme) {
         if (tokenType == Token.ID) {
@@ -349,6 +274,84 @@ public class Scanner {
                     "type=" + type +
                     ", value=" + value +
                     '}';
+        }
+    }
+
+    private class TokenIterator implements Iterator<Token> {
+        private final char[] text;
+
+        private int lexemeStart = 0;
+        private int pos = 0;
+        private int state = STATE_INIT;
+        private Token token;
+
+        private TokenIterator(char[] text) {
+            this.text = text;
+            lexemeStart = 0;
+            pos = 0;
+            state = STATE_INIT;
+
+            token = getToken();
+        }
+
+        public boolean hasNext() {
+            return (token != null);
+        }
+
+        public Token next() {
+            if (token == null)
+                throw new NoSuchElementException();
+
+            Token tk = token;
+            token = getToken();
+
+            return tk;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        private Token getToken() {
+            Token token;
+            do {
+                token = getTokenInternal();
+            } while (token != null && token.isWhitespace());
+
+            return token;
+        }
+
+        private Token getTokenInternal() {
+            Transition transition;
+            Token token;
+            String lexeme;
+
+            do {
+                char c = text[pos++];
+                transition = TABLE[state][c];
+                state = transition.value;
+            } while (transition.isNext());
+
+            switch (transition.type) {
+                case ACCEPT:
+                    lexeme = new String(text, lexemeStart, pos - lexemeStart);
+                    token = createToken(transition.value, lexeme);
+                    lexemeStart = pos;
+                    state = STATE_INIT;
+                    return token;
+                case ACCEPT_PB:
+                    lexeme = new String(text, lexemeStart, pos - lexemeStart - 1);
+                    token = createToken(transition.value, lexeme);
+                    lexemeStart = --pos;
+                    state = STATE_INIT;
+                    return token;
+                case ERROR:
+                    throw new IllegalStateException("Unexpected symbol: " + text[pos - 1]);
+                case EXIT:
+                    return null;
+                default:
+                    throw new IllegalStateException("Impossible situation!");
+            }
         }
     }
 }
