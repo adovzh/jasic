@@ -1,5 +1,8 @@
 package dan.jasic.scanner;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * @author Alexander Dovzhikov
  */
@@ -182,6 +185,36 @@ public class Scanner {
         for (char c = 32; c <= 126; c++) {
             setTransition(state, c, transition);
         }
+    }
+
+    public static TokenList scan(String code) {
+        final Scanner scanner = new Scanner(code);
+
+        return new TokenList() {
+            public Iterator<Token> iterator() {
+                return new Iterator<Token>() {
+                    Token token = scanner.getToken();
+
+                    public boolean hasNext() {
+                        return (token != null);
+                    }
+
+                    public Token next() {
+                        if (token == null)
+                            throw new NoSuchElementException();
+
+                        Token tk = token;
+                        token = scanner.getToken();
+
+                        return tk;
+                    }
+
+                    public void remove() {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            }
+        };
     }
 
     private final Keywords keywords = new Keywords();

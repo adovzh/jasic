@@ -3,6 +3,11 @@ package dan.jasic.scanner;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Iterator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 /**
  * @author Alexander Dovzhikov
  */
@@ -10,481 +15,199 @@ public class ScannerTest {
 
     @Test
     public void whitespace() {
-        String code = "  \t\t \t";
-        Scanner scanner = new Scanner(code);
-        Token token = scanner.getToken();
-
-        Assert.assertNull(token);
+        Assert.assertFalse(Scanner.scan("  \t\t \t").iterator().hasNext());
     }
 
     @Test
     public void newline() {
         String code = "\t\n \r\n\t\r";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NEWLINE, "\n"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NEWLINE, "\r\n"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NEWLINE, "\r"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.NEWLINE, "\n"), it.next());
+        assertEquals(new Token(Token.NEWLINE, "\r\n"), it.next());
+        assertEquals(new Token(Token.NEWLINE, "\r"), it.next());
+        Assert.assertFalse(it.hasNext());
     }
 
     @Test
     public void identifier() {
         String code = "A Bat Mid$ Init create_instance C$D";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "A"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Bat"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Mid$"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Init"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "create_instance"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "C$"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "D"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.ID, "A"), it.next());
+        assertEquals(new Token(Token.ID, "Bat"), it.next());
+        assertEquals(new Token(Token.ID, "Mid$"), it.next());
+        assertEquals(new Token(Token.ID, "Init"), it.next());
+        assertEquals(new Token(Token.ID, "create_instance"), it.next());
+        assertEquals(new Token(Token.ID, "C$"), it.next());
+        assertEquals(new Token(Token.ID, "D"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void quote() {
         String code = " \"Some text\" \"\"\"Hello!\"\", I said\"";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.QUOTE, "\"Some text\""), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.QUOTE, "\"\"\"Hello!\"\", I said\""), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.QUOTE, "\"Some text\""), it.next());
+        assertEquals(new Token(Token.QUOTE, "\"\"\"Hello!\"\", I said\""), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void number() {
         String code = "5 23 .203 86.146 64. 93.2e-3 .8E+7 13.e2";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "5"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "23"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, ".203"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "86.146"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "64."), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "93.2e-3"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, ".8E+7"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "13.e2"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.NUMBER, "5"), it.next());
+        assertEquals(new Token(Token.NUMBER, "23"), it.next());
+        assertEquals(new Token(Token.NUMBER, ".203"), it.next());
+        assertEquals(new Token(Token.NUMBER, "86.146"), it.next());
+        assertEquals(new Token(Token.NUMBER, "64."), it.next());
+        assertEquals(new Token(Token.NUMBER, "93.2e-3"), it.next());
+        assertEquals(new Token(Token.NUMBER, ".8E+7"), it.next());
+        assertEquals(new Token(Token.NUMBER, "13.e2"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void signedNumber() {
         String code = "-5 +6.3";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.MINUS, "-"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "5"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.PLUS, "+"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "6.3"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.MINUS, "-"), it.next());
+        assertEquals(new Token(Token.NUMBER, "5"), it.next());
+        assertEquals(new Token(Token.PLUS, "+"), it.next());
+        assertEquals(new Token(Token.NUMBER, "6.3"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void expression1() {
         String code = "3.4*(-5+9.3e-2)/2.4*.12";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "3.4"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ASTERISK, "*"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.LBRACE, "("), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.MINUS, "-"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "5"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.PLUS, "+"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "9.3e-2"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.RBRACE, ")"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.SLASH, "/"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "2.4"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ASTERISK, "*"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, ".12"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.NUMBER, "3.4"), it.next());
+        assertEquals(new Token(Token.ASTERISK, "*"), it.next());
+        assertEquals(new Token(Token.LBRACE, "("), it.next());
+        assertEquals(new Token(Token.MINUS, "-"), it.next());
+        assertEquals(new Token(Token.NUMBER, "5"), it.next());
+        assertEquals(new Token(Token.PLUS, "+"), it.next());
+        assertEquals(new Token(Token.NUMBER, "9.3e-2"), it.next());
+        assertEquals(new Token(Token.RBRACE, ")"), it.next());
+        assertEquals(new Token(Token.SLASH, "/"), it.next());
+        assertEquals(new Token(Token.NUMBER, "2.4"), it.next());
+        assertEquals(new Token(Token.ASTERISK, "*"), it.next());
+        assertEquals(new Token(Token.NUMBER, ".12"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void expression2() {
         String code = "3*X - Y^2";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "3"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ASTERISK, "*"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "X"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.MINUS, "-"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Y"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.POWER, "^"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "2"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.NUMBER, "3"), it.next());
+        assertEquals(new Token(Token.ASTERISK, "*"), it.next());
+        assertEquals(new Token(Token.ID, "X"), it.next());
+        assertEquals(new Token(Token.MINUS, "-"), it.next());
+        assertEquals(new Token(Token.ID, "Y"), it.next());
+        assertEquals(new Token(Token.POWER, "^"), it.next());
+        assertEquals(new Token(Token.NUMBER, "2"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void expression3() {
         String code = "cost*quantity + overhead";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "cost"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ASTERISK, "*"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "quantity"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.PLUS, "+"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "overhead"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.ID, "cost"), it.next());
+        assertEquals(new Token(Token.ASTERISK, "*"), it.next());
+        assertEquals(new Token(Token.ID, "quantity"), it.next());
+        assertEquals(new Token(Token.PLUS, "+"), it.next());
+        assertEquals(new Token(Token.ID, "overhead"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void expression4() {
         String code = "2^(-X)";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "2"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.POWER, "^"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.LBRACE, "("), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.MINUS, "-"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "X"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.RBRACE, ")"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.NUMBER, "2"), it.next());
+        assertEquals(new Token(Token.POWER, "^"), it.next());
+        assertEquals(new Token(Token.LBRACE, "("), it.next());
+        assertEquals(new Token(Token.MINUS, "-"), it.next());
+        assertEquals(new Token(Token.ID, "X"), it.next());
+        assertEquals(new Token(Token.RBRACE, ")"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void expression5() {
         String code = "SQR(X^2+Y^2)";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "SQR"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.LBRACE, "("), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "X"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.POWER, "^"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "2"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.PLUS, "+"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Y"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.POWER, "^"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "2"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.RBRACE, ")"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.ID, "SQR"), it.next());
+        assertEquals(new Token(Token.LBRACE, "("), it.next());
+        assertEquals(new Token(Token.ID, "X"), it.next());
+        assertEquals(new Token(Token.POWER, "^"), it.next());
+        assertEquals(new Token(Token.NUMBER, "2"), it.next());
+        assertEquals(new Token(Token.PLUS, "+"), it.next());
+        assertEquals(new Token(Token.ID, "Y"), it.next());
+        assertEquals(new Token(Token.POWER, "^"), it.next());
+        assertEquals(new Token(Token.NUMBER, "2"), it.next());
+        assertEquals(new Token(Token.RBRACE, ")"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void expression6() {
         String code = "value(X, Y, a$)";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "value"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.LBRACE, "("), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "X"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.COMMA, ","), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Y"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.COMMA, ","), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "a$"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.RBRACE, ")"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.ID, "value"), it.next());
+        assertEquals(new Token(Token.LBRACE, "("), it.next());
+        assertEquals(new Token(Token.ID, "X"), it.next());
+        assertEquals(new Token(Token.COMMA, ","), it.next());
+        assertEquals(new Token(Token.ID, "Y"), it.next());
+        assertEquals(new Token(Token.COMMA, ","), it.next());
+        assertEquals(new Token(Token.ID, "a$"), it.next());
+        assertEquals(new Token(Token.RBRACE, ")"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void keyword() {
-        String code = "Let Print";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        String code = "Let Print Input If Else";
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Keyword(Token.LET, "Let"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Keyword(Token.PRINT, "Print"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Keyword(Token.LET, "Let"), it.next());
+        assertEquals(new Keyword(Token.PRINT, "Print"), it.next());
+        assertEquals(new Keyword(Token.INPUT, "Input"), it.next());
+        assertEquals(new Keyword(Token.IF, "If"), it.next());
+        assertEquals(new Keyword(Token.ELSE, "Else"), it.next());
+        assertFalse(it.hasNext());
     }
 
     @Test
     public void greetingCode() {
         String code = "10 INPUT \"Enter your name: \"; Name$\r\n" +
                 "20 PRINT \"Hello, \"; Name$";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Iterator<Token> it = Scanner.scan(code).iterator();
 
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "10"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Keyword(Token.INPUT, "INPUT"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.QUOTE, "\"Enter your name: \""), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.SEMICOLON, ";"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Name$"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NEWLINE, "\r\n"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.NUMBER, "20"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Keyword(Token.PRINT, "PRINT"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.QUOTE, "\"Hello, \""), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.SEMICOLON, ";"), token);
-
-        token = scanner.getToken();
-        Assert.assertNotNull(token);
-        Assert.assertEquals(new Token(Token.ID, "Name$"), token);
-
-        token = scanner.getToken();
-        Assert.assertNull(token);
+        assertEquals(new Token(Token.NUMBER, "10"), it.next());
+        assertEquals(new Keyword(Token.INPUT, "INPUT"), it.next());
+        assertEquals(new Token(Token.QUOTE, "\"Enter your name: \""), it.next());
+        assertEquals(new Token(Token.SEMICOLON, ";"), it.next());
+        assertEquals(new Token(Token.ID, "Name$"), it.next());
+        assertEquals(new Token(Token.NEWLINE, "\r\n"), it.next());
+        assertEquals(new Token(Token.NUMBER, "20"), it.next());
+        assertEquals(new Keyword(Token.PRINT, "PRINT"), it.next());
+        assertEquals(new Token(Token.QUOTE, "\"Hello, \""), it.next());
+        assertEquals(new Token(Token.SEMICOLON, ";"), it.next());
+        assertEquals(new Token(Token.ID, "Name$"), it.next());
+        assertFalse(it.hasNext());
     }
 }
