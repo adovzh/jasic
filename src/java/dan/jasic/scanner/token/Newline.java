@@ -10,6 +10,6 @@ public class Newline extends Token {
 
     @Override
     public String toString() {
-        return "Newline";
+        return "NEWLINE";
     }
 }
