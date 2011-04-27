@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 /**
  * @author Alexander Dovzhikov
@@ -17,7 +18,7 @@ public class ScannerTest {
 
     @Before
     public void setUp() {
-        scanner = new Scanner();
+        scanner = new JasicScanner();
     }
 
     @Test
@@ -216,5 +217,17 @@ public class ScannerTest {
         assertEquals(new Token(Token.SEMICOLON, ";"), it.next());
         assertEquals(new Token(Token.ID, "Name$"), it.next());
         assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void emptyScanner() {
+        Scanner emptyScanner = new Scanner() {};
+
+        try {
+            emptyScanner.scan("10 GOTO 10");
+            fail();
+        } catch (IllegalStateException e) {
+            // it's ok
+        }
     }
 }

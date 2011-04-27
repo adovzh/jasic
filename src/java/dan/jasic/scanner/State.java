@@ -3,20 +3,7 @@ package dan.jasic.scanner;
 /**
  * @author Alexander Dovzhikov
  */
-public enum State {
-    STATE_INIT,
-    STATE_WHITESPACE,
-    STATE_NEWLINE,
-    STATE_ID,
-    STATE_QUOTE,
-    STATE_QUOTE_END,
-    STATE_NUMBER1,
-    STATE_NUMBER2,
-    STATE_NUMBER3,
-    STATE_NUMBER4,
-    STATE_NUMBER5,
-    STATE_NUMBER6;
-
+public class State {
     static final int CHAR_MAX = 256;
     static final int EOF = CHAR_MAX - 1;
     
