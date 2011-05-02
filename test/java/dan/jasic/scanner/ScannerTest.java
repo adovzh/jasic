@@ -4,27 +4,35 @@ import dan.jasic.scanner.token.Keyword;
 import dan.jasic.scanner.token.Newline;
 import dan.jasic.scanner.token.Token;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 /**
  * @author Alexander Dovzhikov
  */
 public class ScannerTest {
+    private Scanner scanner;
+
+    @Before
+    public void setUp() {
+        scanner = new JasicScanner();
+    }
 
     @Test
     public void whitespace() {
-        Assert.assertFalse(Scanner.scan("  \t\t \t").iterator().hasNext());
+        Assert.assertFalse(scanner.scan("  \t\t \t").iterator().hasNext());
     }
 
     @Test
     public void newline() {
         String code = "\t\n \r\n\t\r";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Newline("\n"), it.next());
         assertEquals(new Newline("\r\n"), it.next());
@@ -35,7 +43,7 @@ public class ScannerTest {
     @Test
     public void identifier() {
         String code = "A Bat Mid$ Init create_instance C$D";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.ID, "A"), it.next());
         assertEquals(new Token(Token.ID, "Bat"), it.next());
@@ -50,7 +58,7 @@ public class ScannerTest {
     @Test
     public void quote() {
         String code = " \"Some text\" \"\"\"Hello!\"\", I said\"";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.QUOTE, "\"Some text\""), it.next());
         assertEquals(new Token(Token.QUOTE, "\"\"\"Hello!\"\", I said\""), it.next());
@@ -60,7 +68,7 @@ public class ScannerTest {
     @Test
     public void number() {
         String code = "5 23 .203 86.146 64. 93.2e-3 .8E+7 13.e2";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.NUMBER, "5"), it.next());
         assertEquals(new Token(Token.NUMBER, "23"), it.next());
@@ -76,7 +84,7 @@ public class ScannerTest {
     @Test
     public void signedNumber() {
         String code = "-5 +6.3";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.MINUS, "-"), it.next());
         assertEquals(new Token(Token.NUMBER, "5"), it.next());
@@ -88,7 +96,7 @@ public class ScannerTest {
     @Test
     public void expression1() {
         String code = "3.4*(-5+9.3e-2)/2.4*.12";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.NUMBER, "3.4"), it.next());
         assertEquals(new Token(Token.ASTERISK, "*"), it.next());
@@ -108,7 +116,7 @@ public class ScannerTest {
     @Test
     public void expression2() {
         String code = "3*X - Y^2";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.NUMBER, "3"), it.next());
         assertEquals(new Token(Token.ASTERISK, "*"), it.next());
@@ -123,7 +131,7 @@ public class ScannerTest {
     @Test
     public void expression3() {
         String code = "cost*quantity + overhead";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.ID, "cost"), it.next());
         assertEquals(new Token(Token.ASTERISK, "*"), it.next());
@@ -136,7 +144,7 @@ public class ScannerTest {
     @Test
     public void expression4() {
         String code = "2^(-X)";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.NUMBER, "2"), it.next());
         assertEquals(new Token(Token.POWER, "^"), it.next());
@@ -150,7 +158,7 @@ public class ScannerTest {
     @Test
     public void expression5() {
         String code = "SQR(X^2+Y^2)";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.ID, "SQR"), it.next());
         assertEquals(new Token(Token.LBRACE, "("), it.next());
@@ -168,7 +176,7 @@ public class ScannerTest {
     @Test
     public void expression6() {
         String code = "value(X, Y, a$)";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.ID, "value"), it.next());
         assertEquals(new Token(Token.LBRACE, "("), it.next());
@@ -184,7 +192,7 @@ public class ScannerTest {
     @Test
     public void keyword() {
         String code = "Let Print Input If Else";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Keyword(Token.LET, "Let"), it.next());
         assertEquals(new Keyword(Token.PRINT, "Print"), it.next());
@@ -198,7 +206,7 @@ public class ScannerTest {
     public void greetingCode() {
         String code = "10 INPUT \"Enter your name: \"; Name$\r\n" +
                 "20 PRINT \"Hello, \"; Name$";
-        Iterator<Token> it = Scanner.scan(code).iterator();
+        Iterator<Token> it = scanner.scan(code).iterator();
 
         assertEquals(new Token(Token.NUMBER, "10"), it.next());
         assertEquals(new Keyword(Token.INPUT, "INPUT"), it.next());
@@ -212,5 +220,17 @@ public class ScannerTest {
         assertEquals(new Token(Token.SEMICOLON, ";"), it.next());
         assertEquals(new Token(Token.ID, "Name$"), it.next());
         assertFalse(it.hasNext());
+    }
+
+    @Test
+    public void emptyScanner() {
+        Scanner emptyScanner = new Scanner() {};
+
+        try {
+            emptyScanner.scan("10 GOTO 10");
+            fail();
+        } catch (IllegalStateException e) {
+            // it's ok
+        }
     }
 }

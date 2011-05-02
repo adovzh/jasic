@@ -8,10 +8,10 @@ import dan.jasic.scanner.token.Token;
 public class ScannerSandbox {
     public static void main(String[] args) {
         String code = "LET A$ = \"John\"\nPRINT \"Hello, \"; A$; \"!\"\nLET B = -8.001e-7\r\nPRINT B";
-        Scanner scanner = new Scanner(code);
-        Token token;
+        Scanner scanner = new JasicScanner();
+        TokenList tokenList = scanner.scan(code);
 
-        while ((token = scanner.getToken()) != null) {
+        for (Token token : tokenList) {
             System.out.println(token);
         }
     }
