@@ -1,13 +1,16 @@
-<project name="Examples" basedir=".">
-	<description>Examples build system</description>
+<project name="Exercises" basedir=".">
+	<description>Exercises build system</description>
 
 	<target name="ex01">
 		<exec executable="bison" os="Linux">
 			<arg value="Ex01Parser.y"/>
 		</exec>
-		<javac srcdir="." includesfile="Ex01.java"/>
+		<javac srcdir="." includes="Ex01.java"/>
 	</target>
 	
 	<target name="clean">
+		<delete>
+			<fileset dir="." includes="*.class,*Parser.java"/>
+		</delete>
 	</target>
 </project>
