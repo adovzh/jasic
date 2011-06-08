@@ -8,6 +8,13 @@
 		<javac srcdir="." includes="Ex01.java"/>
 	</target>
 	
+	<target name="ex02">
+		<exec executable="bison" os="Linux">
+			<arg value="Ex02Parser.y"/>
+		</exec>
+		<javac srcdir="." includes="Ex02.java"/>
+	</target>
+
 	<target name="clean">
 		<delete>
 			<fileset dir="." includes="*.class,*Parser.java"/>
