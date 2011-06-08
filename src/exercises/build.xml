@@ -1,0 +1,13 @@
+<project name="Examples" basedir=".">
+	<description>Examples build system</description>
+
+	<target name="ex01">
+		<exec executable="bison" os="Linux">
+			<arg value="Ex01Parser.y"/>
+		</exec>
+		<javac srcdir="." includesfile="Ex01.java"/>
+	</target>
+	
+	<target name="clean">
+	</target>
+</project>
