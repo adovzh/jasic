@@ -14,19 +14,19 @@ import java.io.IOException;
 
 %code lexer {
 	private final InputStream in = System.in;
-	private char symbol;
+	private int symbol;
 
 	public String getLVal() {
-		return String.valueOf(symbol);
+		return String.valueOf((char)symbol);
 	}
 
 	public int yylex() throws IOException {
-		symbol = (char)in.read();
+		symbol = in.read();
 
-		if (symbol == -1 || symbol == 10)
+		if (symbol == -1)
 			return EOF;
 
-		if (Character.isLetter(symbol))
+		if (Character.isLetter((char)symbol))
 			return SYM;
 
 		return symbol;
