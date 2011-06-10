@@ -1,0 +1,30 @@
+<project name="jasic" basedir=".">
+    <property name="src" value="src"/>
+    <property name="src.java" value="${src}/java"/>
+    <property name="src.bison" value="${src}/bison"/>
+    <property name="build" value="build"/>
+
+    <target name="init">
+        <mkdir dir="${build}"/>
+        <condition property="os.linux">
+            <os name="Linux"/>
+        </condition>
+    </target>
+
+    <target name="gen.parser" depends="init">
+        <fail message="THIS SCRIPT SHOULD BE RUN UNDER LINUX. BISON UNAVAILABLE!" unless="os.linux"/>
+        <exec dir="${build}" executable="bison" os="Linux" failonerror="true">
+            <arg value="${src.bison}/**/*.y"/>
+        </exec>
+    </target>
+
+    <target name="compile.java" depends="init">
+        <javac srcdir="${src.java}" destdir="${build}" includeAntRuntime="false"/>
+    </target>
+
+    <target name="compile" depends="compile.java, gen.parser"/>
+
+    <target name="clean">
+        <delete dir="${build}"/>
+    </target>
+</project>
