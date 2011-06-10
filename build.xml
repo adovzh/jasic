@@ -3,6 +3,8 @@
     <property name="src.java" value="${src}/java"/>
     <property name="src.bison" value="${src}/bison"/>
     <property name="build" value="build"/>
+	<property name="build.jasic" value="${build}/jasic"/>
+	<property name="build.parser-gen" value="${build}/parser-gen"/>
 
     <target name="init">
         <mkdir dir="${build}"/>
@@ -13,13 +15,16 @@
 
     <target name="gen.parser" depends="init">
         <fail message="THIS SCRIPT SHOULD BE RUN UNDER LINUX. BISON UNAVAILABLE!" unless="os.linux"/>
-        <exec dir="${build}" executable="bison" os="Linux" failonerror="true">
-            <arg value="${src.bison}/**/*.y"/>
+		<mkdir dir="${build.parser-gen}"/>
+        <exec dir="${build.parser-gen}" executable="bison" os="Linux" failonerror="true">
+            <arg value="${basedir}/${src.bison}/dan/jasic/parser/JasicParser.y"/>
         </exec>
+		<javac srcdir="${build.parser-gen}" destdir="${build.jasic}" includeAntRuntime="false"/>
     </target>
 
     <target name="compile.java" depends="init">
-        <javac srcdir="${src.java}" destdir="${build}" includeAntRuntime="false"/>
+		<mkdir dir="${build.jasic}"/>
+        <javac srcdir="${src.java}" destdir="${build.jasic}" includeAntRuntime="false"/>
     </target>
 
     <target name="compile" depends="compile.java, gen.parser"/>
