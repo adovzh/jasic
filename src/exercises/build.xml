@@ -9,6 +9,9 @@
 		<build-example name="Ex02"/>
 	</target>
 
+	<target name="ex03">
+		<build-example name="Ex03"/>
+	</target>
 	<target name="clean">
 		<delete>
 			<fileset dir="." includes="*.class,*Parser.java"/>
