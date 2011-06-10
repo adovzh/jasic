@@ -21,7 +21,7 @@
 			<exec executable="bison" os="Linux">
 				<arg value="@{name}Parser.y"/>
 			</exec>
-			<javac srcdir="." includes="@{name}.java" includeantruntime="false"/>
+			<javac srcdir="." includes="Ex.java,@{name}Parser.java" includeantruntime="false"/>
 		</sequential>
 	</macrodef>
 </project>

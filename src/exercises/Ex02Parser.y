@@ -2,6 +2,7 @@
 %name-prefix "Ex02"
 %define public
 %define final
+%define implements "ParserObject"
 
 %code imports {
 import java.io.InputStream;

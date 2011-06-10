@@ -2,6 +2,7 @@
 %name-prefix "Ex01"
 %define public
 %define final
+%define implements "ParserObject"
 
 %code imports {
 	import java.util.HashMap;
