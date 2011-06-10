@@ -2,17 +2,11 @@
 	<description>Exercises build system</description>
 
 	<target name="ex01">
-		<exec executable="bison" os="Linux">
-			<arg value="Ex01Parser.y"/>
-		</exec>
-		<javac srcdir="." includes="Ex01.java"/>
+		<build-example name="Ex01"/>
 	</target>
 	
 	<target name="ex02">
-		<exec executable="bison" os="Linux">
-			<arg value="Ex02Parser.y"/>
-		</exec>
-		<javac srcdir="." includes="Ex02.java"/>
+		<build-example name="Ex02"/>
 	</target>
 
 	<target name="clean">
@@ -20,4 +14,14 @@
 			<fileset dir="." includes="*.class,*Parser.java"/>
 		</delete>
 	</target>
+
+	<macrodef name="build-example">
+		<attribute name="name"/>
+		<sequential>
+			<exec executable="bison" os="Linux">
+				<arg value="@{name}Parser.y"/>
+			</exec>
+			<javac srcdir="." includes="@{name}.java" includeantruntime="false"/>
+		</sequential>
+	</macrodef>
 </project>
