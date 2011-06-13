@@ -15,23 +15,32 @@ import dan.jasic.scanner.token.Token;
 
 %define stype "Double"
 
-%token NUMBER NL
+%token NUMBER NL LBRACE RBRACE
 
 %left PLUS MINUS
 %left MUL DIV
 %right POW
 %right NEG
 
+%lex-param {InputStream is}
+
 %code lexer {
 	private final Iterator<Token> it;
 	private Token token;
 
-	{
+	private YYLexer(InputStream is) {
 		try {
-			BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-			String line = r.readLine();
+			StringBuilder sb = new StringBuilder();
+			BufferedReader r = new BufferedReader(new InputStreamReader(is));
+
+			char[] buf = new char[1024];
+			int n;
+
+			while ((n = r.read(buf)) != -1)
+                sb.append(buf, 0, n);
+
 			JasicScanner scanner = new JasicScanner();
-			TokenList tokens = scanner.scan(line);
+			TokenList tokens = scanner.scan(sb.toString());
 			it = tokens.iterator();
 		} catch (IOException e) {
 			throw new RuntimeException("INIT ERROR: " + e);
@@ -42,10 +51,8 @@ import dan.jasic.scanner.token.Token;
 		if (token != null) {
 			if (token.getType() == Token.NUMBER) {
 				try {
-					System.out.println("LVal: " + Double.valueOf(token.getLexeme()));
 					return Double.valueOf(token.getLexeme());
 				} catch (NumberFormatException e) {
-					System.err.println("Cannot parse: " + token.getLexeme());
 					throw e;
 				}
 			}
@@ -59,7 +66,6 @@ import dan.jasic.scanner.token.Token;
 			return EOF;
 
 		token = it.next();
-		System.out.println("token: " + token);
 
 		switch (token.getType()) {
 			case Token.NUMBER: return NUMBER;
@@ -69,6 +75,8 @@ import dan.jasic.scanner.token.Token;
 			case Token.SLASH: return DIV;
 			case Token.POWER: return POW;
 			case Token.NEWLINE: return NL;
+			case Token.LBRACE: return LBRACE;
+			case Token.RBRACE: return RBRACE;
 			default: throw new RuntimeException("Token not supported: " + token);
 		}
 	}
@@ -86,7 +94,11 @@ lines : lines expr NL { System.out.println("Expr: " + $2); }
 	;
 
 expr : expr PLUS expr { $$ = $1 + $3; }
+	| expr MINUS expr { $$ = $1 - $3; }
 	| expr MUL expr { $$ = $1 * $3; }
+	| expr DIV expr { $$ = $1 / $3; }
+	| expr POW expr { $$ = Math.pow($1, $3); }
+	| LBRACE expr RBRACE { $$ = $2; }
 	| MINUS expr %prec NEG { $$ = -$2; }
 	| NUMBER
 	;
