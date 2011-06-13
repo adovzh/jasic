@@ -1,28 +1,56 @@
 %language "Java"
 %name-prefix "Jasic"
 %define package "dan.jasic.parser"
+%define implements "Parser"
 %define public
 %define final
 
 %code imports {
 import java.io.*;
+import java.util.*;
+import dan.jasic.parser.Parser;
+import dan.jasic.scanner.*;
 import dan.jasic.scanner.token.Token;
 }
 
 %define stype "Double"
 
-%token NUMBER
+%token NUMBER NL
 
-%left PLUS MINUX
+%left PLUS MINUS
 %left MUL DIV
 %right POW
 %right NEG
 
 %code lexer {
-	// private String expr = new BufferedReader(System.in).readLine();
-	private Iterator<Token> it = new JasicScanner().scan(new BufferedReader(System.in).readLine());
+	private final Iterator<Token> it;
+	private Token token;
+
+	{
+		try {
+			BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
+			String line = r.readLine();
+			JasicScanner scanner = new JasicScanner();
+			TokenList tokens = scanner.scan(line);
+			it = tokens.iterator();
+		} catch (IOException e) {
+			throw new RuntimeException("INIT ERROR: " + e);
+		}
+	}
 
 	public Double getLVal() {
+		if (token != null) {
+			if (token.getType() == Token.NUMBER) {
+				try {
+					System.out.println("LVal: " + Double.valueOf(token.getLexeme()));
+					return Double.valueOf(token.getLexeme());
+				} catch (NumberFormatException e) {
+					System.err.println("Cannot parse: " + token.getLexeme());
+					throw e;
+				}
+			}
+		}
+
 		return null;
 	}
 
@@ -30,32 +58,37 @@ import dan.jasic.scanner.token.Token;
 		if (!it.hasNext())
 			return EOF;
 
-		Token token = it.next();
+		token = it.next();
+		System.out.println("token: " + token);
 
 		switch (token.getType()) {
-			case Token.NUMBER: return NUMBER; break;
-			case Token.PLUS: return PLUS; break;
-			case Token.MINUX: return MINUS; break;
-			case Token.ASTERISK: return MUL; break;
-			case Token.SLASH: return DIV; break;
-			case Token.POWER: return POW; break;
+			case Token.NUMBER: return NUMBER;
+			case Token.PLUS: return PLUS;
+			case Token.MINUS: return MINUS;
+			case Token.ASTERISK: return MUL;
+			case Token.SLASH: return DIV;
+			case Token.POWER: return POW;
+			case Token.NEWLINE: return NL;
 			default: throw new RuntimeException("Token not supported: " + token);
 		}
+	}
+
+	public void yyerror(String s) {
+		System.out.println("ERROR: " + s);
 	}
 }
 
 %%
 
-lines : /* empty */
-	| lines line
+lines : lines expr NL { System.out.println("Expr: " + $2); }
+	| lines NL
+	| /* empty */
 	;
 
-line : expr '\n'
+expr : expr PLUS expr { $$ = $1 + $3; }
+	| expr MUL expr { $$ = $1 * $3; }
+	| MINUS expr %prec NEG { $$ = -$2; }
+	| NUMBER
 	;
-
-expr : NUMBER
-	| expr '+' expr { $$ = $1 + $3; }
-	| expr '*' expr { $$ = $1 * $3; }
-	| '-' expr %prec NEG { $$ = -$2; }
 
 %%

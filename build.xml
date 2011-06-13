@@ -19,7 +19,7 @@
         <exec dir="${build.parser-gen}" executable="bison" os="Linux" failonerror="true">
             <arg value="${basedir}/${src.bison}/dan/jasic/parser/JasicParser.y"/>
         </exec>
-		<javac srcdir="${build.parser-gen}" destdir="${build.jasic}" includeAntRuntime="false"/>
+		<javac srcdir="${build.parser-gen}" destdir="${build.jasic}" classpath="${build.jasic}" includeAntRuntime="false"/>
     </target>
 
     <target name="compile.java" depends="init">
