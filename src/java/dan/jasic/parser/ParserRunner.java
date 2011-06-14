@@ -12,6 +12,6 @@ public class ParserRunner {
 		InputStream is = (args.length > 0) ? new FileInputStream(args[0]) : System.in;
 		Parser parser = ParserFactory.createParser(is);
 		boolean result = parser.parse();
-		System.out.println("Result: " + result);
+		System.out.println((result) ? "OK" : "FAILED");
 	}
 }

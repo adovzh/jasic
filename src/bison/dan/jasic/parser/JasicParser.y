@@ -12,6 +12,7 @@ import dan.jasic.eval.Variant;
 import dan.jasic.parser.Parser;
 import dan.jasic.scanner.*;
 import dan.jasic.scanner.token.Token;
+import dan.jasic.tree.*;
 
 import static dan.jasic.eval.Eval.*;
 }
@@ -25,6 +26,10 @@ import static dan.jasic.eval.Eval.*;
 %left MUL DIV
 %right POW
 %right NEG
+
+%type <Node> lines
+%type <Statement> statement
+%type <Variant> expr clause
 
 %lex-param {InputStream is}
 
@@ -96,13 +101,22 @@ import static dan.jasic.eval.Eval.*;
 
 %%
 
-lines : lines statement NL { System.out.println("Expr: " + $2); }
+/* lines : lines statement NL { System.out.println("Expr: " + $2); }
 	| lines NL
-	| /* empty */
+	| 
+	;
+*/
+
+input : lines
 	;
 
-statement : expr
-	| clause
+lines : lines NL statement { $$ = $1.addStatement($3); }
+	| lines NL
+	| statement { $$ = new Program($1); }
+	;
+
+statement : expr { $$ = new ExpressionStatement($1); }
+	| clause { $$ = new ExpressionStatement($1);  }
     ;
 
 clause : expr LT expr { $$ = lt($1, $3); }
