@@ -8,15 +8,19 @@
 %code imports {
 import java.io.*;
 import java.util.*;
+import dan.jasic.eval.Variant;
 import dan.jasic.parser.Parser;
 import dan.jasic.scanner.*;
 import dan.jasic.scanner.token.Token;
+
+import static dan.jasic.eval.Eval.*;
 }
 
-%define stype "Double"
+%define stype "Variant"
 
 %token NUMBER NL LBRACE RBRACE
 
+%nonassoc LT GT LE GE
 %left PLUS MINUS
 %left MUL DIV
 %right POW
@@ -47,11 +51,11 @@ import dan.jasic.scanner.token.Token;
 		}
 	}
 
-	public Double getLVal() {
+	public Variant getLVal() {
 		if (token != null) {
 			if (token.getType() == Token.NUMBER) {
 				try {
-					return Double.valueOf(token.getLexeme());
+					return Variant.valueOf(Double.parseDouble(token.getLexeme()));
 				} catch (NumberFormatException e) {
 					throw e;
 				}
@@ -77,6 +81,10 @@ import dan.jasic.scanner.token.Token;
 			case Token.NEWLINE: return NL;
 			case Token.LBRACE: return LBRACE;
 			case Token.RBRACE: return RBRACE;
+			case Token.LT: return LT;
+			case Token.GT: return GT;
+			case Token.LE: return LE;
+			case Token.GE: return GE;
 			default: throw new RuntimeException("Token not supported: " + token);
 		}
 	}
@@ -88,18 +96,28 @@ import dan.jasic.scanner.token.Token;
 
 %%
 
-lines : lines expr NL { System.out.println("Expr: " + $2); }
+lines : lines statement NL { System.out.println("Expr: " + $2); }
 	| lines NL
 	| /* empty */
 	;
 
-expr : expr PLUS expr { $$ = $1 + $3; }
-	| expr MINUS expr { $$ = $1 - $3; }
-	| expr MUL expr { $$ = $1 * $3; }
-	| expr DIV expr { $$ = $1 / $3; }
-	| expr POW expr { $$ = Math.pow($1, $3); }
+statement : expr
+	| clause
+    ;
+
+clause : expr LT expr { $$ = lt($1, $3); }
+	| expr GT expr { $$ = gt($1, $3); }
+	| expr LE expr { $$ = le($1, $3); }
+	| expr GE expr { $$ = ge($1, $3); }
+	;
+
+expr : expr PLUS expr { $$ = add($1, $3); }
+	| expr MINUS expr { $$ = sub($1, $3); }
+	| expr MUL expr { $$ = mul($1, $3); }
+	| expr DIV expr { $$ = div($1, $3); }
+	| expr POW expr { $$ = pow($1, $3); }
 	| LBRACE expr RBRACE { $$ = $2; }
-	| MINUS expr %prec NEG { $$ = -$2; }
+	| MINUS expr %prec NEG { $$ = neg($2); }
 	| NUMBER
 	;
 

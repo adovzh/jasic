@@ -39,6 +39,8 @@ public class JasicScanner extends Scanner {
         State number4State = new State();
         State number5State = new State();
         State number6State = new State();
+		State lessState = new State();
+		State greaterState = new State();
 
         setStartState(initState);
 
@@ -68,6 +70,8 @@ public class JasicScanner extends Scanner {
         initState.acceptState('(', Token.LBRACE);
         initState.acceptState(')', Token.RBRACE);
         initState.acceptState(',', Token.COMMA);
+		initState.setNextState('<', lessState);
+		initState.setNextState('>', greaterState);
         initState.setDigitTransition(number1Transition);
         initState.setTransition('.', number2Transition);
 
@@ -127,5 +131,13 @@ public class JasicScanner extends Scanner {
         // STATE_NUMBER6 (Q)
         number6State.initAcceptingPushBack(Token.NUMBER);
         number6State.setDigitTransition(number6Transition);
+
+		// STATE_LESS
+		lessState.initAcceptingPushBack(Token.LT);
+		lessState.acceptState('=', Token.LE);
+
+		// STATE_GREATER
+		greaterState.initAcceptingPushBack(Token.GT);
+		greaterState.acceptState('=', Token.GE);
     }
 }

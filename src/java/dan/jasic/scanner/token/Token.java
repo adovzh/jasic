@@ -30,6 +30,8 @@ public class Token {
     public static final int SHARP = 23;
     public static final int SEMICOLON = 24;
     public static final int SLASH = 25;
+	public static final int LE = 26;
+	public static final int GE = 27;
 
     public static final int ACCESS = 40;
     public static final int AND = 41;
